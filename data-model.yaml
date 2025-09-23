@@ -22,3 +22,7 @@ post:
   - authorId [user]-> FK
   - createdAt
   - updatedAt
+
+
+Connection:
+User -> Post [one-to-many]
