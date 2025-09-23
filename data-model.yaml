@@ -1,0 +1,24 @@
+User:
+  - id
+  - name
+  - email
+  - password
+  - role(ADMIN, SUPER_ADMIN, USER)
+  - phone
+  - picture
+  - status(ACTIVE, INACTIVE, BLOCK)
+  - isVerified
+  - createdAt
+  - updatedAt
+
+post:
+  - id
+  - title
+  - content
+  - thumbnail
+  - isFeatured
+  - tags[]
+  - viewCount
+  - authorId [user]-> FK
+  - createdAt
+  - updatedAt
