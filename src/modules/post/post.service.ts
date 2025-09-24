@@ -8,8 +8,49 @@ const createPostIntoDB = async (payload: Prisma.PostCreateInput) => {
 	return result
 }
 
-const getAllPostFromDB = async () => {
-	const result = await prisma.post.findMany()
+type PostQuery = {
+	page?: number
+	limit?: number
+	search?: string
+	isFeatured?: boolean
+	tags: string[]
+}
+
+const getAllPostFromDB = async ({
+	page = 1,
+	limit = 10,
+	search,
+	isFeatured,
+	tags,
+}: PostQuery) => {
+	const skip = (page - 1) * limit
+	const where: any = {
+		AND: [
+			search && {
+				OR: [
+					{
+						title: {
+							contains: search,
+							mode: 'insensitive',
+						},
+					},
+					{
+						content: {
+							contains: search,
+							mode: 'insensitive',
+						},
+					},
+				],
+			},
+			typeof isFeatured === 'boolean' && { isFeatured },
+			tags.length > 0 && { tags: { hasEvery: tags } },
+		].filter(Boolean),
+	}
+	const result = await prisma.post.findMany({
+		skip,
+		take: limit,
+		where,
+	})
 	return result
 }
 
