@@ -22,8 +22,26 @@ const getAllUserPostFromDB = async (userId: number) => {
 	return result
 }
 
+const getSinglePostFromDB = async (id: number) => {
+	const result = await prisma.post.findUnique({
+		where: { id },
+		include: { author: true },
+	})
+	return result
+}
+
+const updatePostIntoDB = async (id: number, data: Partial<any>) => {
+	return prisma.post.update({ where: { id }, data })
+}
+const deletePostFromDB = async (id: number) => {
+	return prisma.post.delete({ where: { id } })
+}
+
 export const PostService = {
 	createPostIntoDB,
 	getAllPostFromDB,
 	getAllUserPostFromDB,
+	getSinglePostFromDB,
+	updatePostIntoDB,
+	deletePostFromDB,
 }
