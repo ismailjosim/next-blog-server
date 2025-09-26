@@ -60,7 +60,6 @@ pnpm dev
 
 ## Folder Structure
 
-```
 Prisma-Blog/
 │── node_modules/          # Dependencies
 │── src/
@@ -72,7 +71,6 @@ Prisma-Blog/
 │── pnpm-lock.yaml         # Lockfile (pnpm)
 │── tsconfig.json          # TypeScript configuration
 │── README.md              # Documentation
-```
 
 ---
 
