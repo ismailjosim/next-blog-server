@@ -100,6 +100,56 @@ const updatePostIntoDB = async (id: number, data: Partial<any>) => {
 const deletePostFromDB = async (id: number) => {
 	return prisma.post.delete({ where: { id } })
 }
+const getBlogStatFromDB = async () => {
+	return await prisma.$transaction(async (tx) => {
+		const aggregates = await tx.post.aggregate({
+			_count: true,
+			_sum: { viewCount: true },
+			_avg: { viewCount: true },
+			_max: { viewCount: true },
+			_min: { viewCount: true },
+		})
+		const featuredCount = await tx.post.count({
+			where: {
+				isFeatured: true,
+			},
+		})
+		const topFeaturedPost = await tx.post.findFirst({
+			where: {
+				isFeatured: true,
+			},
+			orderBy: {
+				viewCount: 'desc',
+			},
+		})
+
+		const lastWeek = new Date()
+		lastWeek.setDate(lastWeek.getDate() - 7)
+
+		const lastWeekPostCount = await tx.post.count({
+			where: {
+				createdAt: {
+					gte: lastWeek,
+				},
+			},
+		})
+
+		return {
+			stats: {
+				totalPost: aggregates._count ?? 0,
+				totalViews: aggregates._sum.viewCount ?? 0,
+				avgViews: aggregates._avg.viewCount ?? 0,
+				maxViews: aggregates._max.viewCount ?? 0,
+				minViews: aggregates._min.viewCount ?? 0,
+			},
+			featured: {
+				count: featuredCount,
+				topPost: topFeaturedPost,
+			},
+			lastWeekPostCount,
+		}
+	})
+}
 
 export const PostService = {
 	createPostIntoDB,
@@ -108,4 +158,5 @@ export const PostService = {
 	getSinglePostFromDB,
 	updatePostIntoDB,
 	deletePostFromDB,
+	getBlogStatFromDB,
 }
