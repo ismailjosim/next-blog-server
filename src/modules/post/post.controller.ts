@@ -46,11 +46,10 @@ const getAllPost = async (req: Request, res: Response) => {
 
 const getSinglePost = async (req: Request, res: Response) => {
 	try {
-		const id = parseInt(req.params.id)
-		const result = await PostService.getSinglePostFromDB(id)
+		const result = await PostService.getSinglePostFromDB(Number(req.params.id))
 		res.status(201).json({
 			status: true,
-			data: null,
+			data: result,
 			message: 'Post Details Retrieved Successfully',
 		})
 	} catch (error) {

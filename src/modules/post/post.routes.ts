@@ -6,7 +6,7 @@ const router = Router()
 router.post('/', PostController.createPost)
 router.get('/', PostController.getAllPost)
 router.get('/:userId', PostController.getAllUserPost)
-router.get('/:id', PostController.getSinglePost)
+router.get('/single/:id', PostController.getSinglePost)
 router.patch('/:id', PostController.updatePost)
 router.delete('/:id', PostController.deletePost)
 

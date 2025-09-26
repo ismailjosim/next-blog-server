@@ -50,8 +50,20 @@ const getAllPostFromDB = async ({
 		skip,
 		take: limit,
 		where,
+		orderBy: {
+			createdAt: 'desc',
+		},
 	})
-	return result
+	const total = await prisma.post.count({ where })
+	return {
+		data: result,
+		pagination: {
+			page,
+			limit,
+			total,
+			totalPages: Math.ceil(total / limit),
+		},
+	}
 }
 
 const getAllUserPostFromDB = async (userId: number) => {
@@ -64,10 +76,21 @@ const getAllUserPostFromDB = async (userId: number) => {
 }
 
 const getSinglePostFromDB = async (id: number) => {
-	const result = await prisma.post.findUnique({
-		where: { id },
-		include: { author: true },
-	})
+	const [updatePost, result] = await prisma.$transaction([
+		prisma.post.update({
+			where: { id },
+			data: {
+				viewCount: {
+					increment: 1,
+				},
+			},
+		}),
+		prisma.post.findUnique({
+			where: { id },
+			include: { author: true },
+		}),
+	])
+
 	return result
 }
 
