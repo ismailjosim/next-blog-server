@@ -15,10 +15,28 @@ const createPost = async (req: Request, res: Response) => {
 }
 const getAllPost = async (req: Request, res: Response) => {
 	try {
-		// const result = await
+		// implement pagination:
+		const page = Number(req.query.page) || 1
+		const limit = Number(req.query.limit) || 10
+
+		// implement search functionalities
+		const search = (req.query.search as string) || ''
+
+		const isFeatured = req.query.isFeatured
+			? req.query.isFeatured === 'true'
+			: undefined
+
+		const tags = req.query.tags ? (req.query.tags as string).split(',') : []
+		const result = await PostService.getAllPostFromDB({
+			page,
+			limit,
+			search,
+			isFeatured,
+			tags,
+		})
 		res.status(201).json({
 			status: true,
-			data: null,
+			data: result,
 			message: 'All User Data Retrieved Successfully',
 		})
 	} catch (error) {
@@ -28,10 +46,11 @@ const getAllPost = async (req: Request, res: Response) => {
 
 const getSinglePost = async (req: Request, res: Response) => {
 	try {
+		const result = await PostService.getSinglePostFromDB(Number(req.params.id))
 		res.status(201).json({
 			status: true,
-			data: null,
-			message: 'All User Data Retrieved Successfully',
+			data: result,
+			message: 'Post Details Retrieved Successfully',
 		})
 	} catch (error) {
 		console.log(error)
@@ -50,10 +69,39 @@ const getAllUserPost = async (req: Request, res: Response) => {
 		console.log(error)
 	}
 }
+const updatePost = async (req: Request, res: Response) => {
+	try {
+		const postId = Number(req.params.id)
+		const data = req.body
+		const result = await PostService.updatePostIntoDB(postId, data)
+		res.status(201).json({
+			status: true,
+			data: result,
+			message: 'Post Updated Successfully',
+		})
+	} catch (error) {
+		console.log(error)
+	}
+}
+const deletePost = async (req: Request, res: Response) => {
+	try {
+		const postId = Number(req.params.id)
+		const result = await PostService.deletePostFromDB(postId)
+		res.status(201).json({
+			status: true,
+			data: result,
+			message: 'Post Deleted Successfully',
+		})
+	} catch (error) {
+		console.log(error)
+	}
+}
 
 export const PostController = {
 	createPost,
 	getAllPost,
 	getSinglePost,
 	getAllUserPost,
+	updatePost,
+	deletePost,
 }
